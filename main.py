@@ -8,16 +8,14 @@ model = YOLO('best.pt')  # Pastikan path ini benar
 
 # Fungsi untuk melakukan deteksi jerawat
 def detect_acne(image):
-    # Ubah gambar ke format numpy array
     img_np = np.array(image)
-
-    # Deteksi jerawat
+    
+    # Deteksi jerawat menggunakan YOLO
     results = model.predict(source=img_np, imgsz=640)
 
-    # Membuat objek draw dari gambar asli
+    # Gambar hasil deteksi dengan menggunakan Pillow
     draw = ImageDraw.Draw(image)
 
-    # Menggambar kotak deteksi
     for result in results:
         boxes = result.boxes
         if boxes is not None and len(boxes.xyxy) > 0:
@@ -25,12 +23,12 @@ def detect_acne(image):
                 x1, y1, x2, y2 = box[:4]
                 conf = boxes.conf[i] if boxes.conf is not None and len(boxes.conf) > i else None
 
-                # Menggambar kotak di gambar asli
+                # Menggambar kotak deteksi di gambar asli
                 draw.rectangle([x1, y1, x2, y2], outline="red", width=2)
 
                 if conf is not None:
                     # Menambahkan label dengan confidence score
-                    draw.text((x1, y1 - 10), f'{conf:.2f}', fill="red")
+                    draw.text((x1, y1), f'{conf:.2f}', fill="red")
 
     return image
 
